@@ -13,12 +13,13 @@ class RequestSession
   private
 
   def prepare_signature
-    OpenSSL::HMAC.hexdigest(
+    @signature = OpenSSL::HMAC.hexdigest(
       'sha512', @secret.encode('ascii'), data.encode('ascii')
     )
   end
 
   def send
+    binding.pry
     https = Net::HTTP.new(session_uri.host, 443)
     https.use_ssl = true
     req = attach_headers(Net::HTTP::Post.new session_uri.path)
