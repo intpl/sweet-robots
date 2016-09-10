@@ -19,7 +19,6 @@ class RequestSession
   end
 
   def send
-    binding.pry
     https = Net::HTTP.new(session_uri.host, 443)
     https.use_ssl = true
     req = attach_headers(Net::HTTP::Post.new session_uri.path)
