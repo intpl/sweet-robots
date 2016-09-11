@@ -7,7 +7,7 @@ class RequestSession
   end
 
   def execute
-    prepare_signature and send
+    prepare_signature and send_request
   end
 
   private
@@ -18,7 +18,7 @@ class RequestSession
     )
   end
 
-  def send
+  def send_request
     https = Net::HTTP.new(session_uri.host, 443)
     https.use_ssl = true
     req = attach_headers(Net::HTTP::Post.new session_uri.path)
