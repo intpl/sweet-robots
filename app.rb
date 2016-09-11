@@ -16,5 +16,5 @@ get '/' do
     nonce: Time.now.to_i
   ).execute
 
-	puts "Response #{res.code} #{res.message}: #{res.body}"
+  redirect JSON.parse(res.body)["play_url"]
 end

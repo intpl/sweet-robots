@@ -14,7 +14,7 @@ class RequestSession
 
   def prepare_signature
     @signature = OpenSSL::HMAC.hexdigest(
-      'sha512', @secret.encode('ascii'), data.encode('ascii')
+      'sha512', @secret, data.encode('ascii')
     )
   end
 
@@ -28,7 +28,7 @@ class RequestSession
   end
 
   def data
-    session_uri.to_s + @nonce + OpenSSL::Digest::SHA256::hexdigest(request_body_json).encode('ascii')
+    '/v1/session' + @nonce + OpenSSL::Digest::SHA256::hexdigest(request_body_json)
   end
 
   def attach_headers(req)
@@ -43,10 +43,12 @@ class RequestSession
     { game_id: GAME_ID,
       balance: "123.45", locale: "en",
       currency: "EUR", player_id: "asdf",
+      variant: 'hds', callback: 'http://gladecki.pl',
+      rollback_callback: 'http://gladecki.pl'
     }.to_json
   end
 
   def session_uri
-    URI.parse(API_BASE_URL + 'v1/session/')
+    URI.parse(API_BASE_URL + 'v1/session')
   end
 end
