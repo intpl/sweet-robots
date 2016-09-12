@@ -1,9 +1,8 @@
-API_BASE_URL = 'https://api.demo-games.net/'
-GAME_ID = '55f2dc4eba36f81935000001'
-
 class RequestSession
-  def initialize(secret:, api_key:, nonce:)
-    @secret, @api_key, @nonce = secret, api_key, nonce.to_s
+  def initialize(secret:, api_key:, nonce:, hash:)
+    @secret, @api_key = secret, api_key
+    @nonce = nonce.to_s
+    @json = hash.to_json
   end
 
   def execute
@@ -23,12 +22,12 @@ class RequestSession
     https.use_ssl = true
     req = attach_headers(Net::HTTP::Post.new session_uri.path)
 
-    req.body = request_body_json
+    req.body = @json
     https.request(req)
   end
 
   def data
-    '/v1/session' + @nonce + OpenSSL::Digest::SHA256::hexdigest(request_body_json)
+    '/v1/session' + @nonce + OpenSSL::Digest::SHA256::hexdigest(@json)
   end
 
   def attach_headers(req)
@@ -37,15 +36,6 @@ class RequestSession
     req.add_field 'X-Bg-Nonce', @nonce
     req.add_field 'X-Bg-Signature', @signature
     req
-  end
-
-  def request_body_json
-    { game_id: GAME_ID,
-      balance: "123.45", locale: "en",
-      currency: "EUR", player_id: "asdf",
-      variant: 'hds', callback: 'http://gladecki.pl',
-      rollback_callback: 'http://gladecki.pl'
-    }.to_json
   end
 
   def session_uri
